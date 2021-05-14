@@ -34,6 +34,7 @@ void View::paintEvent (QPaintEvent *event)
     qreal cr = 0.7*(cw>ch?ch:cw);
     qreal cs = 1.5 * cr/g->get_m_lines();
     qreal cf = 0.7 * cs;
+    qreal ce = cf*0.3;
     qreal a = 2.0*acos(-1.0)/g->get_m_lines();
     QPointF *t = new QPointF[g->get_m_lines()];
 
@@ -53,10 +54,10 @@ void View::paintEvent (QPaintEvent *event)
             painter.setBrush(QBrush(Qt::white));
         }
         painter.drawEllipse(t[i],cs,cs);
-        painter.drawText(t[i].rx()-cs/4-cs*((i>9?0.25:0)),t[i].ry()+cs/4,QString().setNum(i+1));
+        painter.drawText(t[i].rx()-cs/4-cs*((i+1>9?0.25:0)),t[i].ry()+cs/4,QString().setNum(i+1));
     }
 
-    font.setPointSize(cf*0.5);
+    font.setPointSize(ce);
     painter.setFont(font);
 
     for (size_t i = 0; i < g->get_m_lines(); i++)
@@ -73,7 +74,7 @@ void View::paintEvent (QPaintEvent *event)
                 painter.drawLine(t[i]+QPointF(dx,dy),t[dest]-QPointF(dx,dy));
 
                 painter.setPen(QPen(Qt::red));
-                painter.drawText(t[i]+QPointF(dx,dy)*1,QString().setNum(j+1));
+                painter.drawText(t[i]+QPointF(dx,dy)*0.8+QPointF((-ce/0.7)*(j+1>9?0.5:0.25),ce/2.8),QString().setNum(j+1));
                 painter.setPen(QPen(Qt::black));
 
                 QPointF *arrow = new QPointF[3];
@@ -148,6 +149,9 @@ void View::keyPressEvent (QKeyEvent *event)
     default:
         return;
     }
-    g->emit_event(tmp);
-    repaint();
+    if (g->emit_event(tmp)==EMIT_SUCCESS)
+    {
+        repaint();
+    }
+    return;
 }
